@@ -41,7 +41,8 @@ export default function CreateVote() {
         setIsSubmitting(false);
         return;
       }
-      setVoter(result);
+      setVoter(result.voter);
+      
       setIsSubmitting(false);
     } catch (error) {
       setIsError(

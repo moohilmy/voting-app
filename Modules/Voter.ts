@@ -17,7 +17,7 @@ const VoterSchema: Schema = new Schema<IVoter>(
   {
     clubHouseID: { type: String, required: true, unique: true },
     telegramID: { type: String, required: true, unique: true },
-    voterId: { type: String, required: true, unique: true },
+    voterId: { type: String, required: true, },
     OTP: { type: String, default: null },
     
     hasVoted: { type: Boolean, default: false },

@@ -26,29 +26,25 @@ export const createVoter = async (req: NextRequest) => {
       return otp;
     };
 
-    const createVoterID = (voterData: IVoter): string => {
-      const clubHouseID = voterData.clubHouseID;
-      const time = Date.now().toString();
-      const str = clubHouseID.slice(0, 3).toUpperCase() + time.slice(-6);
-      let voteID = 0;
-      for (let i = 0; i < str.length; i++) {
-        voteID = (voteID * 31 + str.charCodeAt(i)) % 100000000;
-      }
-      return voteID.toString();
-    };
+    let voterId = Math.floor(10000000 + Math.random() * 90000000).toString();
+    while (await Voter.findOne({ voterId })) {
+      voterId = Math.floor(10000000 + Math.random() * 90000000).toString();
+    }
     const newVoter = await Voter.create({
       clubHouseID: voterData.clubHouseID.toLowerCase(),
       telegramID: voterData.telegramID,
-      voterId: createVoterID(voterData),
+      voterId: voterId,
       OTP: createNewOTP(),
     });
     return NextResponse.json(
-      { newVoter, message: "voter created successfully" },
+      { voter: newVoter, message: "voter created successfully" },
       { status: 201 }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Error creating voter: " + (error as Error).message },
+
       { status: 500 }
     );
   }
