@@ -9,13 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "joi": "^18.0.2",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.0.1",
     "next": "16.0.8",
+    "node-telegram-bot-api": "^0.66.0",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "react-hook-form": "^7.68.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/node-telegram-bot-api": "^0.64.13",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
