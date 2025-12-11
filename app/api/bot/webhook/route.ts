@@ -21,6 +21,9 @@ export async function POST(req: NextRequest) {
     const chatId = body.message.chat.id;
     const text = body.message.text.trim();
 
+    console.log(chatId, text);
+    
+
     const voter = await Voter.findOne({ telegramID, OTP: text });
     if (!voter) {
       await sendMessage(chatId, "❌ Invalid OTP for your Telegram account.");
