@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
       `https://api.telegram.org/bot${process.env.BOT_TOKEN}/getChat?chat_id=${telegramID}`
     );
     const data = await res.json();
-    const telegramUserName = data.result.username
+    const telegramUserName : string = data.result.username
 
     const voter = await Voter.findOne({
-      telegramID: telegramUserName,
+      telegramID: telegramUserName.toLowerCase(),
       OTP: text,
     });
     if (!voter) {

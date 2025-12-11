@@ -32,7 +32,7 @@ export const createVoter = async (req: NextRequest) => {
     }
     const newVoter = await Voter.create({
       clubHouseID: voterData.clubHouseID.toLowerCase(),
-      telegramID: voterData.telegramID,
+      telegramID: voterData.telegramID.toLowerCase(),
       voterId: voterId,
       OTP: createNewOTP(),
     });
