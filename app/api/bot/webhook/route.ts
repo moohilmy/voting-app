@@ -1,30 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import {Voter} from "@/Modules/Voter"; // عدّل المسار حسب المشروع
+import { Voter } from "@/Modules/Voter";
 import { connectDB } from "@/lib";
 
-
-// POST route for Telegram Webhook
 export async function POST(req: NextRequest) {
-    await connectDB()
+  await connectDB();
+
   try {
-    
     const secret = req.headers.get("x-telegram-bot-api-secret-token");
-    
-    if (process.env.TELEGRAM_SECRET_TOKEN && secret !== process.env.TELEGRAM_SECRET_TOKEN) {
+    if (
+      process.env.TELEGRAM_SECRET_TOKEN &&
+      secret !== process.env.TELEGRAM_SECRET_TOKEN
+    ) {
       return NextResponse.json({ status: 401, message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    const message = body.message;
-    if (!message || !message.text) {
-      return NextResponse.json({ ok: true });
-    }
+    if (!body.message || !body.message.text) return NextResponse.json({ ok: true });
 
-    const chatId = message.chat.id;
-    const text = message.text.trim();
-    const voter = await Voter.findOne({ OTP: text });
+    const telegramID = body.message.from.id;
+    const chatId = body.message.chat.id;
+    const text = body.message.text.trim();
+
+    const voter = await Voter.findOne({ telegramID, OTP: text });
     if (!voter) {
-      await sendMessage(chatId, "❌ Invalid OTP. Please try again.");
+      await sendMessage(chatId, "❌ Invalid OTP for your Telegram account.");
       return NextResponse.json({ ok: true });
     }
 
