@@ -84,7 +84,7 @@ export default function CreateVote() {
       {voter && (
         <div className=" bg-white rounder-md flex items-center p-2">
           {voter.isVerified ? (
-            <div className=" text-2xl">you voterID {voter.voterId}</div>
+            <div className=" text-2xl">verified</div>
           ) : (
             <div className="flex flex-col items-center justify-center">
               <div className=" text-xl">
