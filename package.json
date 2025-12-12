@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@vercel/analytics": "^1.6.1",
     "joi": "^18.0.2",
     "mongodb": "^7.0.0",
     "mongoose": "^9.0.1",

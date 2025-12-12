@@ -22,7 +22,7 @@ const VoterSchema: Schema = new Schema<IVoter>(
     
     hasVoted: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
-    whoVotedFor: { type: [String], default: null },
+    whoVotedFor: { type: [String], default: [] },
   },
   { timestamps: true }
 );

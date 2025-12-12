@@ -1,4 +1,4 @@
-import { Voter, IVoter, validateCreateVoter } from "@/Modules/Voter";
+import { Voter, validateCreateVoter } from "@/Modules/Voter";
 import { NextRequest, NextResponse } from "next/server";
 
 export const createVoter = async (req: NextRequest) => {
@@ -45,6 +45,32 @@ export const createVoter = async (req: NextRequest) => {
     return NextResponse.json(
       { error: "Error creating voter: " + (error as Error).message },
 
+      { status: 500 }
+    );
+  }
+};
+
+export const getVoterbyVoterID = async (
+  req: NextRequest,
+  context: { params: Promise<{ voterID: string }> }
+) => {
+  try {
+    const { voterID } = await context.params;
+    
+    const voter = await Voter.findOne({voterId : voterID})
+    if (!voter) {
+      return NextResponse.json(
+        { message: "voter not found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(voter, {
+      status: 200,
+    });
+  } catch (err) {
+    console.error("[GET voter Error]", err);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
       { status: 500 }
     );
   }
