@@ -90,12 +90,12 @@ export default function CreateVote() {
                 Please verify yourself by sending your OTP to the Telegram bot
               </div>
 
-              <div className=" text-green-500 text-xl uppercase font-bold my-3">
-                your OTP {voter.OTP}
+              <div className=" text-green-500 text-xl uppercase font-bold my-3 cursor-pointer" onClick={() => navigator.clipboard.writeText(voter.OTP)}>
+                your OTP {voter.OTP} , دوس عليه هيتنسخ عندك و تبعه لبوت
               </div>
               <Link
                 className=" text-center uppercase mt-3 w-full cursor-pointer rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2  disabled:bg-green-400"
-                href={"https://t.me/green_Alataba_vote_bot"} 
+                href={`https://t.me/green_Alataba_vote_bot?sendmessage=${voter.OTP}`} 
               >
                 click here to go to bot
               </Link>
