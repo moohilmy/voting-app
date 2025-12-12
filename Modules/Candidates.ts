@@ -1,11 +1,11 @@
-import Joi from "joi";
+import Joi, { number } from "joi";
 import mongoose, { Document, model, models, Schema } from "mongoose";
 
 interface ICandidates extends Document {
   name: string;
   symbol: string;
   candidateNumber: number;
-  voteCount: string[];
+  voteCount: number[];
 }
 
 const candidatesSchema: Schema = new Schema<ICandidates>(
@@ -29,7 +29,7 @@ const candidatesSchema: Schema = new Schema<ICandidates>(
 
     voteCount: [
       {
-        type: String,
+        type: [Number],
         required: false,
         default: [],
       },

@@ -52,13 +52,9 @@ export default function VotingForm() {
   return voter ? (
     voter.isVerified ? (
       voter.hasVoted ? (
-        <div>
-          <h2>thank you for vote you choose</h2>
-          <ul>
-            {voter.whoVotedFor?.map((vote, index) => (
-              <div key={index}>{vote}</div>
-            ))}
-          </ul>
+        <div  className="bg-amber-100 p-4 rounded-md text-2xl font-bold">
+          <h2> شكرا ليك انت انتخبت استني النتيجه</h2>
+        
         </div>
       ) : <Link className="bg-amber-100 p-2 text-2xl capitalize " href={`/voting/${voterID}`}>vote now</Link>
     ) : (

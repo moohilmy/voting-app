@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ChooseCandidates from "@/components/ChooseCandidates/ChooseCandidates";
+import { IVoter } from "@/Modules/Voter";
 
 const getVoter = async (id: string) => {
   try {
@@ -10,9 +11,8 @@ const getVoter = async (id: string) => {
     if (!res.ok) return null;
 
     const data = await res.json();
-
-
-    return data.voter;
+    
+    return data;
   } catch (error) {
     console.error("Failed to fetch voter:", error);
     return null;
@@ -26,7 +26,7 @@ export default async function Page({
 }) {
   const { voterID } = await params;
 
-  const voter = await getVoter(voterID);
+  const voter: IVoter | null = await getVoter(voterID);
 
   if (voter === null) {
     return (
@@ -40,7 +40,16 @@ export default async function Page({
       </div>
     );
   }
-
+  
+  if (voter?.hasVoted === true) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="bg-amber-100 p-4 rounded-md text-2xl font-bold">
+          شكرا ليك انت انتخبت استني النتيجه
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen p-4 flex justify-center items-center w-full">
       <ChooseCandidates voterID={voterID} />

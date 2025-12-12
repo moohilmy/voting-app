@@ -64,6 +64,7 @@ export const getVoterbyVoterID = async (
         { status: 404 }
       );
     }
+  
     return NextResponse.json(voter, {
       status: 200,
     });

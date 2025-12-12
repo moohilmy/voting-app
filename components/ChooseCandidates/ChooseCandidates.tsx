@@ -10,25 +10,24 @@ export default function ChooseCandidates({ voterID }: { voterID: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [voted, setVoted] = useState<ICandidates[]>([]);
 
- const loadCandidates = async () => {
-  try {
-    const res = await fetch("/api/candidates/getallcandidates");
-    const data = await res.json();
+  const loadCandidates = async () => {
+    try {
+      const res = await fetch("/api/candidates/getallcandidates");
+      const data = await res.json();
 
-    if (!Array.isArray(data)) {
+      if (!Array.isArray(data)) {
+        setError("فشل تحميل المرشحين.. حاول تاني");
+        setCandidates([]);
+        return;
+      }
+
+      setCandidates(data);
+    } catch (err) {
       setError("فشل تحميل المرشحين.. حاول تاني");
-      setCandidates([]);
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    setCandidates(data);
-  } catch (err) {
-    setError("فشل تحميل المرشحين.. حاول تاني");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     loadCandidates();
@@ -59,13 +58,12 @@ export default function ChooseCandidates({ voterID }: { voterID: string }) {
     }
 
     setIsSubmitting(true);
-
+    const voteBody: number[] = voted.map((v) => v.candidateNumber);
     try {
-      await fetch("/api/vote", {
+      await fetch(`/api/voting/${voterID}`, {
         method: "POST",
         body: JSON.stringify({
-          voterID,
-          selected: voted.map((v) => v._id),
+          selected: voteBody,
         }),
       });
     } catch (err) {

@@ -36,7 +36,6 @@ export default function CreateVote() {
       if (!response.ok) {
         setIsError(result.message || "An unknown error occurred");
         setVoter(result?.ifVoterExists);
-        console.log(voter);
 
         setIsSubmitting(false);
         return;
