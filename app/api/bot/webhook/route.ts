@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
 
     const voter = await Voter.findOne({
-      telegramID: telegramUserName.toLowerCase(),
+      telegramFingerprint: telegramUserName.toLowerCase(),
     });
     if (!voter) {
       await sendMessage(chatId, `انت مش مسجل روح سجل الاول`);
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     if (verifyTelgramFingerPrint) {
       await sendMessage(
         chatId,
-        `انت مسجل و ده رقم متحاولش تغش ☺️ \n ${verifyTelgramFingerPrint.telegramID}`
+        `انت مسجل و ده اليوزر الي سجلت بيه متحاولش تغش ☺️ \n ${verifyTelgramFingerPrint.telegramID}`
       );
 
       return NextResponse.json({ ok: true });
@@ -56,9 +56,7 @@ export async function POST(req: NextRequest) {
     if (voter.telegramFingerprint === null) {
       voter.telegramFingerprint = telegramID;
       await voter.save();
-      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه`);
-
-      return NextResponse.json({ ok: true });
+      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه استني هنتاكد و نبعت رقم الناخب`);
     }
 
     if (voter.OTP !== text) {
