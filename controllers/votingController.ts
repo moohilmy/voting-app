@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Voter } from "@/Modules/Voter";
-import { Candidates, ICandidates } from "@/Modules/Candidates";
+import { Candidates } from "@/Modules/Candidates";
 
 export const createVote = async (
   req: NextRequest,
