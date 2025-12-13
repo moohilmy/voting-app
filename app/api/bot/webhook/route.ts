@@ -56,9 +56,7 @@ export async function POST(req: NextRequest) {
     if (voter.telegramFingerprint === null) {
       voter.telegramFingerprint = telegramID;
       await voter.save();
-      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه الكود نتاكد`);
-
-      return NextResponse.json({ ok: true });
+      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه لحظه و يوصل الرقم`);
     }
 
     if (voter.OTP !== text) {
