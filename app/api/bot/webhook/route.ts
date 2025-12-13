@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
     const telegramUserName: string = data.result.username;
 
+
     const voter = await Voter.findOne({
       telegramFingerprint: telegramUserName.toLowerCase(),
     });
@@ -55,24 +56,27 @@ export async function POST(req: NextRequest) {
     if (voter.telegramFingerprint === null) {
       voter.telegramFingerprint = telegramID;
       await voter.save();
-      await sendMessage(
-        chatId,
-        `اهلا بيك في انتخابات العتبه ابعت رقم اللي ظهرك عشان نكمل`
-      );
-      if (voter.OTP !== text) {
-        await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
-        return NextResponse.json({ ok: true });
-      }
+      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه ابعت الرقم نتاكدُُ`);
 
-      voter.isVerified = true;
-      await voter.save();
-
-      await sendMessage(
-        chatId,
-        `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
-      );
       return NextResponse.json({ ok: true });
     }
+
+    if (voter.OTP !== text) {
+      await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
+      return NextResponse.json({ ok: true });
+    }
+
+
+
+    voter.isVerified = true;
+    await voter.save();
+
+    await sendMessage(
+      chatId,
+      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
+    );
+
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("BOT WEBHOOK ERROR:", err);
     return NextResponse.json(
