@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!body.message || !body.message.text)
       return NextResponse.json({ ok: true });
 
-    const telegramID: number = body.message.from.id;
+    const telegramID : number = body.message.from.id;
     const chatId = body.message.chat.id;
     const text = body.message.text.trim();
     const res = await fetch(
@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     );
     const data = await res.json();
     const telegramUserName: string = data.result.username;
+
 
     const voter = await Voter.findOne({
       telegramID: telegramUserName.toLowerCase(),
@@ -55,25 +56,27 @@ export async function POST(req: NextRequest) {
     if (voter.telegramFingerprint === null) {
       voter.telegramFingerprint = telegramID;
       await voter.save();
-      await sendMessage(
-        chatId,
-        `اهلا بيك في انتخابات العتبه لحظه و نبعت الكود`
-      );
-      if (voter.OTP !== text) {
-        await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
-        return NextResponse.json({ ok: true });
-      }
-
-      voter.isVerified = true;
-      await voter.save();
-
-      await sendMessage(
-        chatId,
-        `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
-      );
+      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه الكود نتاكد`);
 
       return NextResponse.json({ ok: true });
     }
+
+    if (voter.OTP !== text) {
+      await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
+      return NextResponse.json({ ok: true });
+    }
+
+
+
+    voter.isVerified = true;
+    await voter.save();
+
+    await sendMessage(
+      chatId,
+      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
+    );
+
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("BOT WEBHOOK ERROR:", err);
     return NextResponse.json(
