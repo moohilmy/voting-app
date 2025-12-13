@@ -11,31 +11,52 @@ export async function POST(req: NextRequest) {
       process.env.TELEGRAM_SECRET_TOKEN &&
       secret !== process.env.TELEGRAM_SECRET_TOKEN
     ) {
-      return NextResponse.json(
-        { status: 401, message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    if (!body.message || !body.message.text)
+    if (!body.message?.text) {
       return NextResponse.json({ ok: true });
+    }
 
-    const telegramID = body.message.from.id;
+    const telegramID: number = body.message.from.id;
+    const telegramUsername: string | undefined =
+      body.message.from.username?.toLowerCase();
+
     const chatId = body.message.chat.id;
-    const text = body.message.text.trim();
-    const res = await fetch(
-      `https://api.telegram.org/bot${process.env.BOT_TOKEN}/getChat?chat_id=${telegramID}`
-    );
-    const data = await res.json();
-    const telegramUserName : string = data.result.username
+    const otp = body.message.text.trim();
 
-    const voter = await Voter.findOne({
-      telegramID: telegramUserName.toLowerCase(),
-      OTP: text,
-    });
+    if (!telegramUsername) {
+      await sendMessage(
+        chatId,
+        "❌ Please set a Telegram username in settings first."
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    const voter = await Voter.findOne({ telegramID: telegramUsername });
+
     if (!voter) {
-      await sendMessage(chatId, "❌ Invalid OTP for your Telegram account.");
+      await sendMessage(chatId, "❌ Voter not found.");
+      return NextResponse.json({ ok: true });
+    }
+
+ 
+    if (!voter.telegramFingerprint) {
+      voter.telegramFingerprint = telegramID;
+      await voter.save();
+    } else {
+      if (voter.telegramFingerprint !== telegramID) {
+        await sendMessage(
+          chatId,
+          "🚫 This Telegram account is not authorized for this voter."
+        );
+        return NextResponse.json({ ok: true });
+      }
+    }
+
+    if (voter.OTP !== otp) {
+      await sendMessage(chatId, "❌ Invalid OTP.");
       return NextResponse.json({ ok: true });
     }
 
@@ -56,6 +77,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 async function sendMessage(chatId: number, text: string) {
   return fetch(

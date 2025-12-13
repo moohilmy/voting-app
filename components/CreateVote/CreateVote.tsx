@@ -90,7 +90,7 @@ export default function CreateVote() {
                 Please verify yourself by sending your OTP to the Telegram bot
               </div>
 
-              <div className=" text-green-500 text-xl uppercase font-bold my-3 cursor-pointer" onClick={() => navigator.clipboard.writeText(voter.OTP)}>
+              <div className=" text-green-500 text-xl uppercase font-bold my-3 cursor-pointer" onClick={() => voter.OTP && navigator.clipboard.writeText(voter.OTP)}>
                 your OTP {voter.OTP} , دوس عليه هيتنسخ عندك و تبعه لبوت
               </div>
               <Link
