@@ -20,7 +20,7 @@ const VoterSchema: Schema = new Schema<IVoter>(
     telegramID: { type: String, required: true, unique: true },
     voterId: { type: String, required: true, },
     OTP: { type: String, default: null },
-    telegramFingerprint: {type: String, default: null},
+    telegramFingerprint: {type: String, default: null , unique: true},
     hasVoted: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     whoVotedFor: { type: [String], default: [] },
