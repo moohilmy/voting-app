@@ -6,64 +6,85 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   try {
-    const body = await req.json();
-    if (!body.message?.text) return NextResponse.json({ ok: true });
+    const secret = req.headers.get("x-telegram-bot-api-secret-token");
+    if (
+      process.env.TELEGRAM_SECRET_TOKEN &&
+      secret !== process.env.TELEGRAM_SECRET_TOKEN
+    ) {
+      return NextResponse.json(
+        { status: 401, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
-    const telegramID: number = body.message.from.id;
-    const telegramUsername =
-      body.message.from.username?.toLowerCase() || null;
+    const body = await req.json();
+    if (!body.message || !body.message.text)
+      return NextResponse.json({ ok: true });
+
+    const telegramID = body.message.from.id;
     const chatId = body.message.chat.id;
     const text = body.message.text.trim();
+    const res = await fetch(
+      `https://api.telegram.org/bot${process.env.BOT_TOKEN}/getChat?chat_id=${telegramID}`
+    );
+    const data = await res.json();
+    const telegramUserName: string = data.result.username;
 
 
-    let voter = await Voter.findOne({
+    const voter = await Voter.findOne({
+      telegramID: telegramUserName.toLowerCase(),
+    });
+    if (!voter) {
+      await sendMessage(chatId, `انت مش مسجل روح سجل الاول`);
+
+      return NextResponse.json({ ok: true });
+    }
+    // first join
+    const verifyTelgramFingerPrint = await Voter.findOne({
       telegramFingerprint: telegramID,
     });
 
-    if (!voter) {
-      if (!telegramUsername) {
-        await sendMessage(chatId, "❌ لازم تحط Username في تلجرام.");
-        return NextResponse.json({ ok: true });
-      }
+    if (verifyTelgramFingerPrint) {
+      await sendMessage(
+        chatId,
+        `انت مسجل و ده رقم متحاولش تغش ☺️ \n ${verifyTelgramFingerPrint.telegramID}`
+      );
 
-      voter = await Voter.findOne({
-        telegramUsername,
-        telegramFingerprint: null,
-      });
-
-      if (!voter) {
-        await sendMessage(chatId, "❌ انت غير مسجل كناخب.");
-        return NextResponse.json({ ok: true });
-      }
-
-
-      voter.telegramFingerprint = telegramID;
-      await voter.save();
-    }
-
-    if (voter.OTP !== text) {
-      await sendMessage(chatId, "❌ كود التحقق غير صحيح.");
       return NextResponse.json({ ok: true });
     }
 
-    voter.isVerified = true
+    if (voter.telegramFingerprint === null) {
+      voter.telegramFingerprint = telegramID;
+      await voter.save();
+      await sendMessage(chatId,`اهلا بيك في انتخابات العتبه`);
+
+      return NextResponse.json({ ok: true });
+    }
+
+    if (voter.OTP !== text) {
+      await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
+      return NextResponse.json({ ok: true });
+    }
+
+
+
+    voter.isVerified = true;
     await voter.save();
 
     await sendMessage(
       chatId,
-      `✅ تم التحقق بنجاح\nرقم الناخب: ${voter.voterId}`
+      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
     );
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error(err);
+    console.error("BOT WEBHOOK ERROR:", err);
     return NextResponse.json(
       { ok: false, error: (err as Error).message },
       { status: 500 }
     );
   }
 }
-
 
 async function sendMessage(chatId: number, text: string) {
   return fetch(
