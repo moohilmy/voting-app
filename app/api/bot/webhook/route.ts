@@ -80,10 +80,25 @@ export async function POST(req: NextRequest) {
 
     await sendMessage(
       chatId,
-      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}\n
-      go to vote\n
-      https://voting-app-azure-alpha.vercel.app/voting
-      `
+      `✅ Verified successfully!
+
+Your Voter ID:
+\`${voter.voterId}\`
+
+اضغط على الزرار وروّح صوّت 👇`,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "🗳 Go to vote",
+                url: "https://voting-app-azure-alpha.vercel.app/voting",
+              },
+            ],
+          ],
+        },
+      }
     );
 
     return NextResponse.json({ ok: true });
@@ -96,13 +111,32 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function sendMessage(chatId: number, text: string) {
+type SendMessageOptions = {
+  parse_mode?: "Markdown" | "HTML";
+  reply_markup?: {
+    inline_keyboard?: {
+      text: string;
+      callback_data?: string;
+      url?: string;
+    }[][];
+  };
+};
+
+async function sendMessage(
+  chatId: number,
+  text: string,
+  options?: SendMessageOptions
+) {
   return fetch(
     `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        ...options,
+      }),
     }
   );
 }
