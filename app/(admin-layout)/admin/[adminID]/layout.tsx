@@ -5,7 +5,10 @@ export default async function layout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ voterID: string }>;
+  params: Promise<{ adminID: string }>;
 }>) {
+  const {adminID} = await params
+  console.log(adminID);
+  
   return <div>{children}</div>;
 }
