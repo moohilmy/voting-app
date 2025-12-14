@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 const links: { name: string; href: string }[] = [
-  { name: "join to elections", href: "/" },
-  { name: "go to vote", href: "/voting" },
+  { name: "result", href: "/admin/voting-dashboard" }, 
+  { name: "add candidate", href: "/admin/voting-dashboard/add-candidate" },
 ];
 
 export default function Header() {

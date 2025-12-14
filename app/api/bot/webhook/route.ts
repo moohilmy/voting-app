@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Voter } from "@/Modules/Voter";
 import { connectDB } from "@/lib";
+import { VotingInfo } from "@/Modules/VotingInfo";
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -42,7 +43,6 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ ok: true });
     }
-    // first join
     const verifyTelgramFingerPrint = await Voter.findOne({
       telegramFingerprint: telegramID,
     });
@@ -57,8 +57,6 @@ export async function POST(req: NextRequest) {
     }
 
     if (voter.telegramFingerprint === null) {
-      voter.telegramFingerprint = telegramID;
-      await voter.save();
       await sendMessage(
         chatId,
         `اهلا بيك في انتخابات العتبه لحظه و يوصل الرقم`
@@ -67,15 +65,25 @@ export async function POST(req: NextRequest) {
 
     if (voter.OTP !== text) {
       await sendMessage(chatId, `الكود غلط حاول تتاكد منه \n `);
+
       return NextResponse.json({ ok: true });
     }
-
+    await VotingInfo.updateOne(
+      {},
+      {
+        $inc: { voterhaveRight: 1 },
+      }
+    );
+    voter.telegramFingerprint = telegramID;
     voter.isVerified = true;
     await voter.save();
 
     await sendMessage(
       chatId,
-      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}`
+      `✅ Verified successfully!\nYour Voter ID: ${voter.voterId}\n
+      go to vote\n
+      https://voting-app-azure-alpha.vercel.app/voting
+      `
     );
 
     return NextResponse.json({ ok: true });

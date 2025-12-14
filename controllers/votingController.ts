@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Voter } from "@/Modules/Voter";
 import { Candidates } from "@/Modules/Candidates";
+import { VotingInfo } from "@/Modules/VotingInfo";
 
 export const createVote = async (
   req: NextRequest,
@@ -46,13 +47,34 @@ export const createVote = async (
 
       voter.whoVotedFor.push(candidateId);
     }
-
+    await VotingInfo.updateOne(
+      {},
+      {
+        $inc: { votersWhoVotting: 1 },
+      }
+    );
     voter.hasVoted = true;
 
     await voter.save();
 
     return NextResponse.json(
       { message: "Vote recorded successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Error creating vote: " + (error as Error).message },
+      { status: 500 }
+    );
+  }
+};
+
+export const getInfoVote = async (req: NextRequest) => {
+  try {
+    const votingInfo = await VotingInfo.findOne({});
+    return NextResponse.json(
+      { votingInfo, message: "get vote info successfully" },
       { status: 200 }
     );
   } catch (error) {

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import mongoose, { Document, model, models, Schema } from "mongoose";
+import { Document, model, models, Schema } from "mongoose";
 
 interface IVoter extends Document {
   clubHouseID: string;
@@ -18,9 +18,9 @@ const VoterSchema: Schema = new Schema<IVoter>(
   {
     clubHouseID: { type: String, required: true, unique: true },
     telegramID: { type: String, required: true, unique: true },
-    voterId: { type: String, required: true, },
+    voterId: { type: String, required: true },
     OTP: { type: String, default: null },
-    telegramFingerprint: {type: Number, default: null},
+    telegramFingerprint: { type: Number, default: null, sparse: true },
     hasVoted: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     whoVotedFor: { type: [String], default: [] },

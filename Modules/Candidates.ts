@@ -1,5 +1,5 @@
-import Joi, { number } from "joi";
-import mongoose, { Document, model, models, Schema } from "mongoose";
+import Joi from "joi";
+import  { Document, model, models, Schema } from "mongoose";
 
 interface ICandidates extends Document {
   name: string;
