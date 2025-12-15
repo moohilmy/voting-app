@@ -12,8 +12,19 @@ export const createVote = async (
     const vote: string[] = selected;
 
     const { voterID } = await context.params;
-
+    if (!voterID) {
+      return NextResponse.json({ message: "access denied" }, { status: 403 });
+    }
     const voter = await Voter.findOne({ voterId: voterID });
+    const res = await fetch(
+      `https://api.telegram.org/bot${process.env.BOT_TOKEN}/getChat?chat_id=${voter.telegramFingerprint}`
+    );
+    const data = await res.json();
+
+    if(!data.ok){
+      return NextResponse.json({ message: "access denied" }, { status: 403 });
+
+    }
     if (!voter) {
       return NextResponse.json({ message: "voter not found" }, { status: 404 });
     }
