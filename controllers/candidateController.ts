@@ -1,3 +1,4 @@
+import { Admin } from "@/Modules/Admin";
 import {
   Candidates,
   ICandidates,
@@ -45,7 +46,7 @@ export const createCandidates = async (req: NextRequest) => {
 
 export const getALLCandidates = async () => {
   try {
-    const candidates = await Candidates.find({}).lean();
+    const candidates = await Candidates.find({}).lean().select("-voteCount");
     return NextResponse.json(candidates || [], { status: 200 });
   } catch (err) {
     console.error(err);
